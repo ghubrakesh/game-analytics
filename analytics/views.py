@@ -60,7 +60,7 @@ def query_data(request):
     if request.method == 'POST':
         filters = {}
         for key, value in request.POST.items():
-            if key in ['date_context', 'csrfmiddlewaretoken', 'price_context']:
+            if key in ['date_context', 'csrfmiddlewaretoken', 'price_context', 'age_context']:
                 continue
             elif key in ['mac', 'windows', 'linux']:
                 filters[key] = True
@@ -76,8 +76,12 @@ def query_data(request):
                     filters[f'price__{context}'] = value
                 else:
                     filters['price'] = value
-            elif key == 'required_age':
-                filters[f"{key}__gte"] = value
+            elif key == 'required_age' and value:
+                context = request.POST.get('age_context')
+                if context in ['lt', 'gt']:
+                    filters[f'required_age__{context}'] = value
+                else:
+                    filters['required_age'] = value
             elif value:
                 if type(value) is str:
                     all_keywords = value.split(',')
