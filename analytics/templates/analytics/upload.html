@@ -2,14 +2,70 @@
 <html>
 <head>
     <title>Upload CSV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <h1>Upload CSV</h1>
-    <form method="post">
-        {% csrf_token %}
-        <label for="csv_url">CSV URL:</label>
-        <input type="text" id="csv_url" name="csv_url" required>
-        <button type="submit">Upload</button>
-    </form>
+    <div class="container">
+        <h1>Upload CSV</h1>
+        <form method="post">
+            {% csrf_token %}
+            <label for="csv_url">CSV URL:</label>
+            <input type="text" id="csv_url" name="csv_url" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
 </body>
 </html>
