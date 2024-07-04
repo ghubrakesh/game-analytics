@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, sans-serif;
+        }
+        .container {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 2vw;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .form-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+        .form-container form {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2vw;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .form-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-container input,
+        .form-container select {
+            width: 80%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .platforms {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .release-group,
+        .price-group {
+            width: 95%;
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-container button {
+            grid-column: span 2;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+        .toggle-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .toggle-btn:hover {
+            background-color: #0056b3;
+        }
+        .platforms {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .release-date {
+            white-space: nowrap;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .truncated-cell {
+            position: relative;
+            cursor: pointer;
+        }
+        .truncated-cell:hover::after {
+            content: attr(data-full-content);
+            position: absolute;
+            top: 50%;
+            right: 50%;
+            background-color: #fffcc8;
+            padding: 10px;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: max-content;
+            max-width: 400px;
+            height: auto;
+            max-height: 200px;
+            overflow: auto;
+            white-space: normal;
+        }
+        thead th {
+            cursor: pointer;
+            position: -webkit-sticky; /* For Safari */
+            position: sticky;
+            top: 0;
+            background-color: #f1f1f1;
+            z-index: 10;
+        }
+    </style>
+    <script>
+        function toggleForm() {
+            const formContainer = document.getElementById('form-container');
+            formContainer.style.display = formContainer.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        function submitForm(event) {
+            event.preventDefault();
+            const form = document.getElementById('filterForm');
+            form.submit();
+            toggleForm();
+        }
+    </script>
+    <title>Query Data</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Query Data</h1>
+        <button class="toggle-btn" onclick="toggleForm()">Filter Results</button>
+        <div id="form-container" class="form-container">
+            <form id="filterForm" method="post" onsubmit="submitForm(event)">
+                {% csrf_token %}
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name">
+                
+                <label for="required_age">Age:</label>
+                <input type="number" id="required_age" name="required_age">
+                
+                <label for="app_id">App ID:</label>
+                <input type="number" id="app_id" name="app_id">
+
+                <div class="price-group">
+                    <label for="price_context">Price:</label>
+                    <select name="price_context" id="price_context">
+                        <option value="lt">Before</option>
+                        <option value="gt">After</option>
+                        <option value="eq">At</option>
+                    </select>
+                    <input type="number" id="price" name="price">
+                </div>
+
+                <div class="release-group">
+                    <label for="date_context">Released:</label>
+                    <select name="date_context" id="date_context">
+                        <option value="lt">Before</option>
+                        <option value="gt">After</option>
+                        <option value="eq">At</option>
+                    </select>
+                    <input type="date" id="release_date" name="release_date">
+                </div>
+                
+                <label for="dlc_count">DLC Count:</label>
+                <input type="number" id="dlc_count" name="dlc_count">
+                
+                <label for="about_the_game">About the game:</label>
+                <input type="text" id="about_the_game" name="about_the_game">
+                
+                <label for="supported_languages">Supported Languages:</label>
+                <input type="text" id="supported_languages" name="supported_languages">
+                
+                <label>Platforms:</label>
+                <div class="platforms">
+                    <input type="checkbox" id="mac" name="mac">
+                    <label for="mac">MAC</label>
+                    <input type="checkbox" id="windows" name="windows">
+                    <label for="windows">Windows</label>
+                    <input type="checkbox" id="linux" name="linux">
+                    <label for="linux">Linux</label>
+                </div>
+                
+                <label for="positive">Positive:</label>
+                <input type="number" id="positive" name="positive">
+                
+                <label for="negative">Negative:</label>
+                <input type="number" id="negative" name="negative">
+                
+                <label for="score_rank">Score rank:</label>
+                <input type="number" id="score_rank" name="score_rank">
+                
+                <label for="developers">Developers:</label>
+                <input type="text" id="developers" name="developers">
+                
+                <label for="publishers">Publishers:</label>
+                <input type="text" id="publishers" name="publishers">
+                
+                <label for="categories">Categories:</label>
+                <input type="text" id="categories" name="categories">
+                
+                <label for="genres">Genre:</label>
+                <input type="text" id="genres" name="genres">
+                
+                <label for="tags">Tag:</label>
+                <input type="text" id="tags" name="tags">
+                
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    <h2>Results:</h2>
+    {% if data %}
+    <div style="font-size:xx-small; padding-left: 8vw;">*Tap on column heading to sort accordingly.</div>
+    <table class="sortable">
+        <thead>
+            <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Release Date</th>
+            <th>Price</th>
+            <th>Required Age</th>
+            <th>About</th>
+            <th>Supported Languages</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.name }}</td>
+                <td class="release-date">{{ item.release_date|date:'Y-m-d' }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.required_age }}</td>
+                <td class="truncated-cell" data-full-content="{{ item.about_the_game }}">
+                    {{ item.about_the_game|truncatewords:20 }}
+                </td>
+                <td class="truncated-cell" data-full-content="{{ item.supported_languages }}">
+                    {{ item.supported_languages|truncatewords:3}}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    {% else %}
+    <h3>No searches found!</h3>
+    {% endif %}
+<br>
+ 
+</body>
+<script src="https://www.kryogenix.org/code/browser/sorttable/sorttable.js"></script>
+</html>
