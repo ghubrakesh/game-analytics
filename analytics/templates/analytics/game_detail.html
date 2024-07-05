@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: url('https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iIsGJ2cmtCEE/v0/1200x503.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #0e0e0e;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #000000;
+        }
+        .game-details label {
+            font-weight: bold;
+            color: #000000;
+        }
+        .game-details p {
+            margin: 10px 0;
+        }
+    </style>
+    <title>{{ game.name }}</title>
+</head>
+<body>
+    <h1>{{ game.name }}</h1>
+    <div class="glass game-details">
+        <p><label>App ID:</label> {{ game.app_id }}</p>
+        <p><label>Release Date:</label> {{ game.release_date|date:'Y-m-d' }}</p>
+        <p><label>Required Age:</label> {{ game.required_age }}</p>
+        <p><label>Price:</label> ${{ game.price }}</p>
+        <p><label>About the Game:</label> {{ game.about_the_game }}</p>
+        <p><label>Supported Languages:</label> {{ game.supported_languages }}</p>
+        <p><label>Available on Mac:</label> {{ game.mac|yesno:"Yes,No" }}</p>
+        <p><label>Available on Windows:</label> {{ game.windows|yesno:"Yes,No" }}</p>
+        <p><label>Available on Linux:</label> {{ game.linux|yesno:"Yes,No" }}</p>
+        <p><label>Positive Reviews:</label> {{ game.positive }}</p>
+        <p><label>Negative Reviews:</label> {{ game.negative }}</p>
+        <p><label>Score Rank:</label> {{ game.score_rank }}</p>
+        <p><label>Developers:</label> {{ game.developers|default:"N/A" }}</p>
+        <p><label>Publishers:</label> {{ game.publishers|default:"N/A" }}</p>
+        <p><label>Categories:</label> {{ game.categories|default:"N/A" }}</p>
+        <p><label>Genres:</label> {{ game.genres|default:"N/A" }}</p>
+        <p><label>Tags:</label> {{ game.tags|default:"N/A" }}</p>
+    </div>
+</body>
+</html>
