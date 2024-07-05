@@ -8,10 +8,21 @@
         .container {
             max-width: 80%;
             margin: 0 auto;
-            padding: 2vw;
         }
         h1 {
             text-align: center;
+        }
+        h2{
+            padding-left: 10vw;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            max-width: fit-content;
+            margin-right: auto;
+        }
+        small{
+            padding-top: 2vw;
+            color: red;
         }
         .form-container {
             display: none;
@@ -64,13 +75,16 @@
         }
         .toggle-btn {
             display: block;
-            margin: 10px auto;
+            {#margin: 10px auto;#}
             padding: 10px 20px;
             background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            max-width: fit-content;
+            margin-left: auto;
+            margin-bottom: 10px;
         }
         .toggle-btn:hover {
             background-color: #0056b3;
@@ -150,7 +164,6 @@
 </head>
 <body>
     <div class="container">
-        <h1>Query Data</h1>
         <button class="toggle-btn" onclick="toggleForm()">Filter Results</button>
         <div id="form-container" class="form-container">
             <form id="filterForm" method="post" onsubmit="submitForm(event)">
@@ -236,12 +249,13 @@
                 
                 <button type="submit">Search</button>
             </form>
+            <small>* Add comma separated values for multiple filters.</small>
         </div>
     </div>
     
     {% if data %}
     <h2>Results:</h2><br>
-    <div style="font-size:xx-small; padding-left: 8vw;">*Tap on column heading to sort accordingly.</div>
+    <small style="padding-left: 10vw">*Tap on column heading to sort accordingly.</small>
     <table class="sortable">
         <thead>
             <tr>
