@@ -23,7 +23,7 @@ class GameDataTests(TestCase):
             price=29.99,
             dlc_count=2,
             about_the_game="This is a test game.",
-            supported_languages="English, Spanish",
+            supported_languages=json.dumps(["English", "Spanish"]),
             windows=True,
             mac=False,
             linux=True,
@@ -63,7 +63,6 @@ class GameDataTests(TestCase):
         self.assertContains(response, "Test Game")
 
     def test_game_detail_view(self):
-        import pdb;pdb.set_trace()
         detail_url = reverse('game_detail', args=[self.game_data.id])
         response = self.client.get(detail_url)
         self.assertEqual(response.status_code, 200)
