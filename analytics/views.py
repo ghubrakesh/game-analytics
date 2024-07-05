@@ -1,14 +1,32 @@
+import io
 import ujson
 import requests
+import numpy as np
 import pandas as pd
 from datetime import datetime
-from django.shortcuts import render, redirect
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
+from django.db.models import Q
+
 from .models import GameData
-import io
-import numpy as np  # Add this import for handling NaN values
+
 
 def upload_csv(request):
+    """
+    View to handle uploading CSV url to populate GameData model.
+
+    Converts a Google Sheets URL to CSV format and processes the data
+    to populate the GameData model.
+    It deletes old objects to not cross the limit of free db instance.
+    Args:
+        request (HttpRequest): HTTP request object.
+
+    Returns:
+        HttpResponse: Redirects to 'query_data' on successful upload,
+                      or error message on failure.
+    """
+
     if request.method == 'POST':
         url = request.POST.get('csv_url')
         if url:
@@ -20,12 +38,18 @@ def upload_csv(request):
                 if response.status_code == 200:
                     csv_data = response.content.decode('utf-8')
                     df = pd.read_csv(io.StringIO(csv_data))
-                    # df = df.where(pd.notna(df), None)
-                    df = df.replace({np.nan: None})
-                    GameData.objects.all().delete()  # Clear existing data
+                    df = df.replace({np.nan: None})    # Replace all NaN values with None for db compatibility
+
+
+                    # TODO: HANDLE FOR MULTIPLE USERS: DON'T DELETE THE OLD DATA IF DB LIMIT IS INCREASED.
+                    GameData.objects.all().delete()
+
                     for index, row in df.iterrows():
+                        # Format release_date if needed ( Jun 2020 -> Jun 1, 2020)
                         if len(row['Release date']) < 11:
                             row['Release date'] = row['Release date'][:4] + "1, " + row['Release date'][4:]
+
+                        # Create GameData object with parsed data from DataFrame row
                         GameData.objects.create(
                             app_id=row['AppID'],
                             name=row['Name'],
@@ -49,18 +73,36 @@ def upload_csv(request):
                         )
                     return redirect('query_data')
                 else:
-                    return HttpResponse("Failed to download the file. Please check the URL.")
+                    return HttpResponse("No file found at given URL.", status=404)
             except Exception as e:
                 return HttpResponse(f"An error occurred: {e}")
+
     return render(request, 'analytics/upload.html')
 
 
 def query_data(request):
+    """
+    View to query GameData objects based on user-provided filters.
+
+    Processes POST request parameters to filter GameData objects
+    based on various fields like app_id, name, supported age, release date etc.
+    Supports multiple filter values for certain fields.
+
+    Args:
+        request (HttpRequest): HTTP request object with filter parameters.
+
+    Returns:
+        HttpResponse: Rendered 'query.html' template with filtered data.
+    """
+
     data = GameData.objects.all()
     if request.method == 'POST':
         filters = {}
+        internal_filter_list = []
+
+        # Process each POST parameter to build filters
         for key, value in request.POST.items():
-            if key in ['date_context', 'csrfmiddlewaretoken', 'price_context', 'age_context']:
+            if not value or key in ['date_context', 'csrfmiddlewaretoken', 'price_context', 'age_context']:
                 continue
             elif key in ['mac', 'windows', 'linux']:
                 filters[key] = True
@@ -82,13 +124,34 @@ def query_data(request):
                     filters[f'required_age__{context}'] = value
                 else:
                     filters['required_age'] = value
-            elif value:
+            elif key in ['supported_languages', 'developers', 'publishers', 'categories', 'tags']:
+                # Handle comma-separated values for these fields, make internal django query object and add it to list
+                ls = value.split(', ')
+                internal_filter = Q()
+                for field in ls:
+                    internal_filter &= Q(**{f"{key}__icontains": field})
+                internal_filter_list.append(internal_filter)
+            else:
                 if type(value) is str:
                     all_keywords = value.split(',')
                     for kw in all_keywords:
                         filters[f'{key}__icontains'] = value
                 else:
                     filters[key] = request.POST[value]
-        if filters:
-            data = GameData.objects.filter(**filters)
+
+        # Combine internal filters with logical AND, and apply to queryset.
+        combined_internal_filter = Q()
+        if internal_filter_list:
+            for internal_filter in internal_filter_list:
+                combined_internal_filter &= internal_filter
+
+        data = GameData.objects.filter(**filters).filter(combined_internal_filter)
+
+    # Return rendered query.html template with data returnd after applying all the filters
     return render(request, 'analytics/query.html', {'data': data})
+
+
+
+def game_detail(request, game_id):
+    game = get_object_or_404(GameData, pk=game_id)
+    return render(request, 'analytics/game_detail.html', {'game': game})
