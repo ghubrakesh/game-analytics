@@ -78,10 +78,8 @@ WSGI_APPLICATION = 'game_analytics.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-default_db = dj_database_url.parse(os.getenv('DATABASE_URL'))
-default_db['TEST'] = { "NAME": "test_db" }
 DATABASES = {
-    "default": default_db
+	"default": dj_database_url.parse(os.getenv('DATABASE_URL'))
 }
 
 
