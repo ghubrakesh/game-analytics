@@ -28,6 +28,14 @@ Here are some of the key endpoints you'll find useful:
 
 ---
 
+### Limitations ⚠️
+
+1. As of now, there is no authentication system, and only one request can be handled at as time.
+2. The database hosted comes with storage limitations, we suggest you to upload file less than 150MB for faster experience.
+3. Service is hoted on a free instance at render.com, there may be lags while processing your request. Please be patient.
+
+---
+
 ### How to run locally 🚀
 To run Game Analytics locally or contribute to our codebase, follow these steps:
 
