@@ -46,6 +46,16 @@ git clone https://github.com/your-repo/game-analytics.git
 cd game-analytics
 ```
 
+2. Set up environmental variables:
+- Create a .env file in the project directory.
+```bash
+touch .env
+```
+- Paste your public postgresql database url for the database in .env as as:
+```bash
+DATABASE_URL=<your_public_database_url>
+```
+
 2. Build the Docker Image:
 
 ```bash
